@@ -104,6 +104,16 @@ vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "theme-init.js"), "ut
 assert.equal(bootstrapDocument.documentElement.dataset.theme, "after-dark");
 assert.equal(bootstrapThemeColor.content, "#141315");
 
+const deleteCandidate = context.waitingTasks()[0];
+const sessionCountBeforeDelete = vm.runInContext("state.sessions.length", context);
+context.startTask(deleteCandidate.id, "test");
+vm.runInContext("state.activeSession.startedAtMs -= 6000", context);
+context.deleteTask(deleteCandidate.id);
+assert.equal(context.activeTask(), null);
+assert.equal(vm.runInContext(`state.tasks.some((task) => task.id === ${JSON.stringify(deleteCandidate.id)})`, context), false);
+assert.equal(vm.runInContext("state.sessions.length", context), sessionCountBeforeDelete + 1);
+assert.equal(vm.runInContext("state.sessions[0].outcome", context), "partial");
+
 const android = context.parseWhatsAppExport(
   "24/03/2026, 15:17 - Me: Finish the ticket\ncontinued note\n24/03/2026, 15:18 - You changed the subject\n24/03/2026, 15:19 - Me: Walk for 30 mins"
 );
