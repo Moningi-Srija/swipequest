@@ -9,6 +9,7 @@ SwipeQuest turns an overwhelming brain dump into a deck of playable side quests.
 ## What works in Phase 1
 
 - Tinder-style task deck: left to pass, right to begin
+- Touch-friendly phone swipes with a start-timer confirmation after every yes
 - Persistent Cherry Editorial / After Dark theme switch
 - Confirmed task deletion that preserves completed focus receipts
 - Searchable waiting, active, and completed task lists

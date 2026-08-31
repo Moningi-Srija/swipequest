@@ -53,6 +53,10 @@ const els = {
   taskDialog: document.querySelector("#taskDialog"),
   taskForm: document.querySelector("#taskForm"),
   taskDialogTitle: document.querySelector("#taskDialogTitle"),
+  startTaskDialog: document.querySelector("#startTaskDialog"),
+  startTaskForm: document.querySelector("#startTaskForm"),
+  startTaskName: document.querySelector("#startTaskName"),
+  cancelStartTask: document.querySelector("#cancelStartTask"),
   deleteTaskDialog: document.querySelector("#deleteTaskDialog"),
   deleteTaskForm: document.querySelector("#deleteTaskForm"),
   deleteTaskName: document.querySelector("#deleteTaskName"),
@@ -85,9 +89,11 @@ let activeView = "swipe";
 let listFilter = "waiting";
 let toastTimer = null;
 let timerInterval = null;
+let swipePending = false;
 let whatsappCandidates = [];
 let whatsappImportStats = null;
 let whatsappRenderCount = WHATSAPP_RENDER_LIMIT;
+let pendingStartTask = null;
 let pendingDeleteTaskId = null;
 let state = loadState();
 
@@ -369,7 +375,7 @@ function cardHtml(task, stackIndex) {
   const energyLabel = task.energy === "deep" ? "deep focus" : task.energy === "low" ? "low mind" : "medium energy";
   return `
     <article class="task-card" data-task-id="${escapeHtml(task.id)}" data-stack="${stackIndex}" style="--card-accent:${accent}">
-      ${stackIndex === 0 ? '<span class="swipe-stamp match">locked</span><span class="swipe-stamp pass">later</span>' : ""}
+      ${stackIndex === 0 ? '<span class="swipe-stamp match">yes</span><span class="swipe-stamp pass">later</span>' : ""}
       <div class="card-top">
         <span class="category-chip">${escapeHtml(task.category)}</span>
         <span class="energy-chip">${escapeHtml(energyLabel)}</span>
@@ -462,13 +468,20 @@ function bindSwipeGesture(card) {
 }
 
 function animateSwipe(direction) {
+  if (swipePending) return;
   const task = waitingTasks()[0];
   if (!task) return;
+  swipePending = true;
   const topCard = els.taskDeck.querySelector('[data-stack="0"]');
   if (topCard) topCard.classList.add(direction === "right" ? "is-leaving-right" : "is-leaving-left");
   window.setTimeout(() => {
-    if (direction === "right") startTask(task.id, "swipe");
-    else passTask(task.id);
+    swipePending = false;
+    if (direction === "right") {
+      renderDeck();
+      requestTaskStart(task.id, "swipe");
+    } else {
+      passTask(task.id);
+    }
   }, 190);
 }
 
@@ -515,6 +528,29 @@ function startTask(id, source = "list") {
   render();
   setView("focus");
   showToast("Quest matched. Lock-in era activated ⚡");
+}
+
+function requestTaskStart(id, source = "list") {
+  const task = state.tasks.find((item) => item.id === id);
+  if (!task) return;
+  if (els.startTaskDialog.open) return;
+  if (state.activeSession) {
+    startTask(id, source);
+    return;
+  }
+
+  pendingStartTask = { id: task.id, source };
+  els.startTaskName.textContent = `“${task.title}”`;
+  els.startTaskDialog.showModal();
+  window.setTimeout(() => els.cancelStartTask.focus(), 40);
+}
+
+function confirmTaskStart(event) {
+  event.preventDefault();
+  const choice = pendingStartTask;
+  pendingStartTask = null;
+  if (els.startTaskDialog.open) els.startTaskDialog.close();
+  if (choice) startTask(choice.id, choice.source);
 }
 
 function elapsedSeconds() {
@@ -1274,7 +1310,7 @@ function bindDynamicButtons() {
     button.addEventListener("click", () => setView(button.dataset.viewGo));
   });
   document.querySelectorAll("[data-start-task]").forEach((button) => {
-    button.addEventListener("click", () => startTask(button.dataset.startTask, "list"));
+    button.addEventListener("click", () => requestTaskStart(button.dataset.startTask, "list"));
   });
   document.querySelectorAll("[data-finish-task]").forEach((button) => {
     button.addEventListener("click", () => finishTask(button.dataset.finishTask, "list"));
@@ -1321,6 +1357,10 @@ els.whatsappShowAll.addEventListener("change", () => {
   renderWhatsAppCandidates();
 });
 els.taskForm.addEventListener("submit", saveTaskFromForm);
+els.startTaskForm.addEventListener("submit", confirmTaskStart);
+els.startTaskDialog.addEventListener("close", () => {
+  pendingStartTask = null;
+});
 els.deleteTaskForm.addEventListener("submit", confirmTaskDeletion);
 els.deleteTaskDialog.addEventListener("close", () => {
   pendingDeleteTaskId = null;
@@ -1341,7 +1381,7 @@ document.querySelectorAll("[data-status-filter]").forEach((button) => {
 
 document.addEventListener("keydown", (event) => {
   const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
-  if (typing || els.taskDialog.open || els.deleteTaskDialog.open || els.whatsappDialog.open || activeView !== "swipe") return;
+  if (typing || els.taskDialog.open || els.startTaskDialog.open || els.deleteTaskDialog.open || els.whatsappDialog.open || activeView !== "swipe") return;
   if (event.key === "ArrowLeft") animateSwipe("left");
   if (event.key === "ArrowRight") animateSwipe("right");
 });

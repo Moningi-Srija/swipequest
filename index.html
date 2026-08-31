@@ -97,10 +97,13 @@
               </button>
               <button class="round-action match-action" id="matchTask" type="button">
                 <span>♥</span>
-                <small>lock in ↗</small>
+                <small>choose this ↗</small>
               </button>
             </div>
-            <p class="keyboard-hint">Drag it · <kbd>←</kbd> skip the lore · <kbd>→</kbd> lock in</p>
+            <p class="keyboard-hint">
+              <span class="desktop-gesture-hint">Drag it · <kbd>←</kbd> skip the lore · <kbd>→</kbd> choose</span>
+              <span class="touch-gesture-hint">Swipe with your thumb · ← later · → choose</span>
+            </p>
           </div>
         </section>
 
@@ -232,6 +235,30 @@
         </label>
 
         <button class="primary-button full-width" type="submit">Drop into the quest deck ✦</button>
+      </form>
+    </dialog>
+
+    <dialog
+      class="modal start-dialog"
+      id="startTaskDialog"
+      aria-labelledby="startTaskDialogTitle"
+      aria-describedby="startTaskDialogDescription"
+    >
+      <form method="dialog" id="startTaskForm">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">You said yes ♡</p>
+            <h2 id="startTaskDialogTitle">Start the timer?</h2>
+          </div>
+          <button class="close-button" type="button" data-close-dialog="startTaskDialog" aria-label="Close">×</button>
+        </div>
+        <p id="startTaskDialogDescription" class="start-dialog-copy">
+          <strong id="startTaskName">This quest</strong> is your pick. Start now, or leave it in the deck—nothing changes until you choose.
+        </p>
+        <div class="start-dialog-actions">
+          <button class="secondary-button" id="cancelStartTask" type="button" data-close-dialog="startTaskDialog">Leave in deck</button>
+          <button class="primary-button" type="submit">Start timer ⚡</button>
+        </div>
       </form>
     </dialog>
 
