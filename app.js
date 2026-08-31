@@ -53,6 +53,10 @@ const els = {
   taskDialog: document.querySelector("#taskDialog"),
   taskForm: document.querySelector("#taskForm"),
   taskDialogTitle: document.querySelector("#taskDialogTitle"),
+  deleteTaskDialog: document.querySelector("#deleteTaskDialog"),
+  deleteTaskForm: document.querySelector("#deleteTaskForm"),
+  deleteTaskName: document.querySelector("#deleteTaskName"),
+  cancelDeleteTask: document.querySelector("#cancelDeleteTask"),
   taskId: document.querySelector("#taskId"),
   taskTitle: document.querySelector("#taskTitle"),
   taskCategory: document.querySelector("#taskCategory"),
@@ -84,6 +88,7 @@ let timerInterval = null;
 let whatsappCandidates = [];
 let whatsappImportStats = null;
 let whatsappRenderCount = WHATSAPP_RENDER_LIMIT;
+let pendingDeleteTaskId = null;
 let state = loadState();
 
 function currentTheme() {
@@ -693,6 +698,7 @@ function renderTaskList() {
           ${task.status !== "done" ? `<button class="mini-button" type="button" data-finish-task="${escapeHtml(task.id)}">Done</button>` : ""}
           ${task.status !== "active" ? `<button class="mini-button" type="button" data-edit-task="${escapeHtml(task.id)}">Edit</button>` : ""}
           ${task.status === "done" ? `<button class="mini-button" type="button" data-reopen-task="${escapeHtml(task.id)}">Reopen</button>` : ""}
+          <button class="mini-button danger" type="button" data-delete-task="${escapeHtml(task.id)}">Delete</button>
         </div>
       </article>`;
   }).join("");
@@ -779,6 +785,56 @@ function reopenTask(id) {
   saveState();
   render();
   showToast("Quest revived and returned to the deck");
+}
+
+function openDeleteTaskDialog(id) {
+  const task = state.tasks.find((item) => item.id === id);
+  if (!task) return;
+  pendingDeleteTaskId = task.id;
+  els.deleteTaskName.textContent = `“${task.title}”`;
+  els.deleteTaskDialog.showModal();
+  window.setTimeout(() => els.cancelDeleteTask.focus(), 40);
+}
+
+function deleteTask(id) {
+  const task = state.tasks.find((item) => item.id === id);
+  if (!task) return;
+
+  const previousState = state;
+  const wasActive = state.activeSession?.taskId === task.id;
+  const duration = wasActive ? elapsedSeconds() : 0;
+  state = {
+    ...state,
+    tasks: state.tasks.filter((item) => item.id !== task.id),
+    sessions: [...state.sessions],
+    activeSession: state.activeSession ? { ...state.activeSession } : null,
+  };
+
+  if (wasActive) {
+    if (duration >= 5) logSession(task, "partial", duration);
+    state.activeSession = null;
+  }
+
+  if (!saveState()) {
+    state = previousState;
+    render();
+    showToast("Couldn’t delete that quest — your saved copy is still safe");
+    return;
+  }
+
+  if (wasActive) window.clearInterval(timerInterval);
+  if (els.deleteTaskDialog.open) els.deleteTaskDialog.close();
+  render();
+  if (wasActive && activeView === "focus") setView("tasks");
+  showToast("Quest deleted. Your focus receipts are still safe.");
+}
+
+function confirmTaskDeletion(event) {
+  event.preventDefault();
+  const id = pendingDeleteTaskId;
+  pendingDeleteTaskId = null;
+  if (id) deleteTask(id);
+  else if (els.deleteTaskDialog.open) els.deleteTaskDialog.close();
 }
 
 function shuffleDeck() {
@@ -1232,6 +1288,9 @@ function bindDynamicButtons() {
   document.querySelectorAll("[data-reopen-task]").forEach((button) => {
     button.addEventListener("click", () => reopenTask(button.dataset.reopenTask));
   });
+  document.querySelectorAll("[data-delete-task]").forEach((button) => {
+    button.addEventListener("click", () => openDeleteTaskDialog(button.dataset.deleteTask));
+  });
 }
 
 document.querySelectorAll("[data-view-target]").forEach((button) => {
@@ -1262,6 +1321,10 @@ els.whatsappShowAll.addEventListener("change", () => {
   renderWhatsAppCandidates();
 });
 els.taskForm.addEventListener("submit", saveTaskFromForm);
+els.deleteTaskForm.addEventListener("submit", confirmTaskDeletion);
+els.deleteTaskDialog.addEventListener("close", () => {
+  pendingDeleteTaskId = null;
+});
 els.taskSearch.addEventListener("input", renderTaskList);
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => {
@@ -1278,7 +1341,7 @@ document.querySelectorAll("[data-status-filter]").forEach((button) => {
 
 document.addEventListener("keydown", (event) => {
   const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName);
-  if (typing || els.taskDialog.open || els.whatsappDialog.open || activeView !== "swipe") return;
+  if (typing || els.taskDialog.open || els.deleteTaskDialog.open || els.whatsappDialog.open || activeView !== "swipe") return;
   if (event.key === "ArrowLeft") animateSwipe("left");
   if (event.key === "ArrowRight") animateSwipe("right");
 });

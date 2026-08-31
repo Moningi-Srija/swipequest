@@ -235,6 +235,31 @@
       </form>
     </dialog>
 
+    <dialog
+      class="modal delete-dialog"
+      id="deleteTaskDialog"
+      role="alertdialog"
+      aria-labelledby="deleteTaskDialogTitle"
+      aria-describedby="deleteTaskDialogDescription"
+    >
+      <form method="dialog" id="deleteTaskForm">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">A little queue cleanup</p>
+            <h2 id="deleteTaskDialogTitle">Delete this quest?</h2>
+          </div>
+          <button class="close-button" type="button" data-close-dialog="deleteTaskDialog" aria-label="Close">×</button>
+        </div>
+        <p id="deleteTaskDialogDescription" class="delete-dialog-copy">
+          <strong id="deleteTaskName">This quest</strong> will leave your task lists. Past focus receipts stay safe in Wins.
+        </p>
+        <div class="delete-dialog-actions">
+          <button class="secondary-button" id="cancelDeleteTask" type="button" data-close-dialog="deleteTaskDialog">Keep quest</button>
+          <button class="danger-button" type="submit">Delete quest</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog class="modal import-modal" id="whatsappDialog">
       <div class="import-dialog-content">
         <div class="modal-heading">

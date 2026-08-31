@@ -10,6 +10,7 @@ SwipeQuest turns an overwhelming brain dump into a deck of playable side quests.
 
 - Tinder-style task deck: left to pass, right to begin
 - Persistent Cherry Editorial / After Dark theme switch
+- Confirmed task deletion that preserves completed focus receipts
 - Searchable waiting, active, and completed task lists
 - Focus timer with pause, finish, and partial-session logging
 - Completion history and daily focus stats
