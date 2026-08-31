@@ -4,6 +4,8 @@
 
 SwipeQuest turns an overwhelming brain dump into a deck of playable side quests. Swipe past what is not the vibe, match with one move, lock in for a timed session, and keep receipts for every W.
 
+**Live app:** [swipequest.onrender.com](https://swipequest.onrender.com)
+
 ## What works in Phase 1
 
 - Tinder-style task deck: left to pass, right to begin
