@@ -1,0 +1,13 @@
+.DS_Store
+*.log
+.env
+.env.*
+
+# Never commit personal exports or local Task Crush backups.
+WhatsApp Chat*.txt
+*WhatsApp*.txt
+task-crush-backup-*.json
+swipequest-backup-*.json
+exports/
+backups/
+dist/

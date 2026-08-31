@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#100b1e" />
+    <meta
+      name="description"
+      content="SwipeQuest turns a chaotic brain dump into one playful side quest at a time."
+    />
+    <meta property="og:title" content="SwipeQuest — Brain dump. Swipe. Lock in." />
+    <meta
+      property="og:description"
+      content="Turn a chaotic brain dump into one playable side quest at a time."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SwipeQuest — Brain dump. Swipe. Lock in." />
+    <meta
+      name="twitter:description"
+      content="Turn a chaotic brain dump into one playable side quest at a time."
+    />
+    <meta name="twitter:image" content="/og.png" />
+    <title>SwipeQuest — Brain dump. Swipe. Lock in.</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <button class="brand" type="button" data-view-target="swipe" aria-label="Go to swipe deck">
+          <span class="brand-mark">SQ</span>
+          <span>
+            <strong>SwipeQuest</strong>
+            <small>brain dump → side quest</small>
+          </span>
+        </button>
+
+        <div class="topbar-actions">
+          <span class="local-badge" title="Your task data stays in this browser">
+            <span class="local-dot"></span>
+            on-device era
+          </span>
+          <button class="icon-button" id="openAddTask" type="button" aria-label="Add a side quest">+</button>
+        </div>
+      </header>
+
+      <section class="stats" aria-label="Today at a glance">
+        <article>
+          <span id="waitingCount">0</span>
+          <small>quests waiting</small>
+        </article>
+        <article>
+          <span id="doneTodayCount">0</span>
+          <small>Ws today</small>
+        </article>
+        <article>
+          <span id="focusMinutesCount">0m</span>
+          <small>locked in</small>
+        </article>
+      </section>
+
+      <main>
+        <section class="view is-active" id="swipeView" data-view="swipe">
+          <div class="section-heading swipe-heading">
+            <div>
+              <p class="eyebrow">✦ main character mode: on</p>
+              <h1>Swipe your <span class="gradient-word">next side quest.</span></h1>
+              <p class="hero-subcopy">Brain dump the chaos. Match with one move. Lock in.</p>
+            </div>
+            <button class="text-button shuffle-button" id="shuffleDeck" type="button">reshuffle the plot ✦</button>
+          </div>
+
+          <div class="deck-wrap">
+            <span class="floating-sticker sticker-one" aria-hidden="true">low-key productive</span>
+            <span class="floating-sticker sticker-two" aria-hidden="true">one quest. no lore.</span>
+            <div class="deck" id="taskDeck" aria-live="polite"></div>
+            <div class="swipe-actions" id="swipeActions">
+              <button class="round-action pass-action" id="passTask" type="button">
+                <span>←</span>
+                <small>not the vibe</small>
+              </button>
+              <button class="round-action match-action" id="matchTask" type="button">
+                <span>♥</span>
+                <small>lock in</small>
+              </button>
+            </div>
+            <p class="keyboard-hint">Drag it · <kbd>←</kbd> not the vibe · <kbd>→</kbd> lock in</p>
+          </div>
+        </section>
+
+        <section class="view" id="tasksView" data-view="tasks">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">The whole brain-dump lore</p>
+              <h1>Browse every side quest.</h1>
+            </div>
+            <button class="primary-button" id="openAddTaskFromList" type="button">+ Drop a quest</button>
+          </div>
+
+          <div class="task-toolbar">
+            <label class="search-box">
+              <span aria-hidden="true">⌕</span>
+              <input id="taskSearch" type="search" placeholder="Search the quest lore…" autocomplete="off" />
+            </label>
+            <div class="status-filters" role="group" aria-label="Filter tasks by status">
+              <button class="filter-pill is-active" type="button" data-status-filter="waiting">Quest queue</button>
+              <button class="filter-pill" type="button" data-status-filter="active">Locked in</button>
+              <button class="filter-pill" type="button" data-status-filter="done">Done</button>
+            </div>
+          </div>
+
+          <div class="task-list" id="taskList"></div>
+
+          <div class="data-tools">
+            <div>
+              <strong>Your data belongs to you.</strong>
+              <p>Saved unencrypted in this browser profile. Nothing is uploaded anywhere.</p>
+            </div>
+            <div>
+              <button class="secondary-button" id="exportData" type="button">Export backup</button>
+              <button class="secondary-button" id="importData" type="button">Restore backup</button>
+              <button class="secondary-button whatsapp-button" id="openWhatsAppImport" type="button">Import WhatsApp .txt</button>
+              <input id="importFile" type="file" accept="application/json,.json" hidden />
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="focusView" data-view="focus">
+          <div class="focus-layout" id="focusContent"></div>
+        </section>
+
+        <section class="view" id="winsView" data-view="wins">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Receipts that you did the thing</p>
+              <h1>Your permanent W archive.</h1>
+            </div>
+          </div>
+          <div class="wins-list" id="winsList"></div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Primary navigation">
+        <button class="nav-item is-active" type="button" data-view-target="swipe">
+          <span>♡</span>
+          <small>Swipe</small>
+        </button>
+        <button class="nav-item" type="button" data-view-target="tasks">
+          <span>☷</span>
+          <small>Quests</small>
+        </button>
+        <button class="nav-item" type="button" data-view-target="focus">
+          <span>⚡</span>
+          <small>Lock in</small>
+        </button>
+        <button class="nav-item" type="button" data-view-target="wins">
+          <span>🏆</span>
+          <small>W archive</small>
+        </button>
+      </nav>
+    </div>
+
+    <dialog class="modal" id="taskDialog">
+      <form method="dialog" id="taskForm">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Thought → playable side quest</p>
+            <h2 id="taskDialogTitle">Drop a quest</h2>
+          </div>
+          <button class="close-button" type="button" data-close-dialog="taskDialog" aria-label="Close">×</button>
+        </div>
+
+        <input id="taskId" type="hidden" />
+        <label>
+          <span>What’s the quest?</span>
+          <input id="taskTitle" name="title" type="text" maxlength="140" required placeholder="e.g. Attempt one CP question" />
+        </label>
+
+        <div class="form-grid">
+          <label>
+            <span>Category</span>
+            <select id="taskCategory" name="category">
+              <option>👑 Empire Building</option>
+              <option>🛸 Office Grind</option>
+              <option>💪 Glow Up</option>
+              <option>🛵 Freedom &amp; Adulting</option>
+              <option>🎨 Creator Mode</option>
+              <option>🌍 Explore &amp; Social</option>
+              <option>🕉 Faith &amp; Regulation</option>
+            </select>
+          </label>
+          <label>
+            <span>Focus time</span>
+            <select id="taskEstimate" name="estimate">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60" selected>1 hour</option>
+              <option value="90">90 minutes</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          <span>Energy</span>
+          <select id="taskEnergy" name="energy">
+            <option value="low">Low mind</option>
+            <option value="medium" selected>Medium</option>
+            <option value="deep">Deep focus</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Helpful note <em>optional</em></span>
+          <textarea id="taskNotes" name="notes" rows="3" maxlength="500" placeholder="What would make starting easier?"></textarea>
+        </label>
+
+        <button class="primary-button full-width" type="submit">Drop into the quest deck ✦</button>
+      </form>
+    </dialog>
+
+    <dialog class="modal import-modal" id="whatsappDialog">
+      <div class="import-dialog-content">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Turn chat chaos into playable moves</p>
+            <h2>Rescue quests from WhatsApp</h2>
+          </div>
+          <button class="close-button" type="button" data-close-dialog="whatsappDialog" aria-label="Close">×</button>
+        </div>
+
+        <div class="privacy-note">
+          <span aria-hidden="true">◉</span>
+          <p><strong>Local by design.</strong> The file is read only in this browser. Safety filtering is heuristic, so you review every task before anything is saved.</p>
+        </div>
+
+        <div class="whatsapp-file-step" id="whatsappFileStep">
+          <div class="file-drop-card">
+            <span class="file-drop-icon" aria-hidden="true">↥</span>
+            <h3>Choose your brain-dump chat</h3>
+            <p>WhatsApp → Export chat → Without media → choose the <strong>.txt</strong> file.</p>
+            <label class="primary-button file-picker" for="whatsappFile">Choose WhatsApp .txt</label>
+            <input id="whatsappFile" type="file" accept="text/plain,.txt" hidden />
+          </div>
+        </div>
+
+        <div class="whatsapp-preview" id="whatsappPreview" hidden>
+          <div class="import-summary">
+            <div>
+              <strong id="whatsappFileName">WhatsApp export</strong>
+              <p id="whatsappSummary">Reading your brain dump…</p>
+            </div>
+            <button class="text-button" id="chooseDifferentWhatsAppFile" type="button">Choose another</button>
+          </div>
+
+          <div class="import-toolbar">
+            <label class="search-box import-search">
+              <span aria-hidden="true">⌕</span>
+              <input id="whatsappSearch" type="search" placeholder="Search extracted notes…" autocomplete="off" />
+            </label>
+            <label class="show-all-toggle">
+              <input id="whatsappShowAll" type="checkbox" />
+              <span>Show all reviewable messages</span>
+            </label>
+          </div>
+
+          <div class="selection-tools">
+            <button class="mini-button accent" id="selectSuggested" type="button">Select suggested</button>
+            <button class="mini-button" id="clearWhatsAppSelection" type="button">Clear selection</button>
+            <span id="whatsappVisibleCount"></span>
+          </div>
+
+          <div class="candidate-list" id="whatsappCandidateList"></div>
+
+          <div class="import-footer">
+            <div>
+              <strong id="whatsappSelectedCount">0 selected</strong>
+              <small>Categories and focus time are guessed—you can edit them later.</small>
+            </div>
+            <button class="primary-button" id="importSelectedWhatsApp" type="button">Import selected</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
