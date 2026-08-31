@@ -104,6 +104,14 @@ vm.runInContext(fs.readFileSync(path.join(__dirname, "..", "theme-init.js"), "ut
 assert.equal(bootstrapDocument.documentElement.dataset.theme, "after-dark");
 assert.equal(bootstrapThemeColor.content, "#141315");
 
+const guardedStartCandidate = context.waitingTasks()[0];
+context.requestTaskStart(guardedStartCandidate.id, "swipe");
+assert.equal(nodes.get("#startTaskDialog").open, true);
+assert.equal(context.activeTask(), null);
+context.confirmTaskStart({ preventDefault() {} });
+assert.equal(context.activeTask().id, guardedStartCandidate.id);
+context.returnActiveToWaiting();
+
 const deleteCandidate = context.waitingTasks()[0];
 const sessionCountBeforeDelete = vm.runInContext("state.sessions.length", context);
 context.startTask(deleteCandidate.id, "test");
