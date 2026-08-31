@@ -2,7 +2,7 @@ services:
   - type: web
     runtime: static
     name: swipequest
-    buildCommand: mkdir -p dist && cp index.html styles.css app.js og.png dist/
+    buildCommand: mkdir -p dist && cp index.html styles.css app.js theme-init.js og-chic.png dist/
     staticPublishPath: ./dist
     headers:
       - path: /*

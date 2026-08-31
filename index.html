@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="cherry-editorial">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#100b1e" />
+    <meta id="themeColor" name="theme-color" content="#f8f1e7" />
     <meta
       name="description"
       content="SwipeQuest turns a chaotic brain dump into one playful side quest at a time."
@@ -15,15 +15,16 @@
     />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://swipequest.onrender.com/" />
-    <meta property="og:image" content="https://swipequest.onrender.com/og.png" />
+    <meta property="og:image" content="https://swipequest.onrender.com/og-chic.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="SwipeQuest — Brain dump. Swipe. Lock in." />
     <meta
       name="twitter:description"
       content="Turn a chaotic brain dump into one playable side quest at a time."
     />
-    <meta name="twitter:image" content="https://swipequest.onrender.com/og.png" />
+    <meta name="twitter:image" content="https://swipequest.onrender.com/og-chic.png" />
     <title>SwipeQuest — Brain dump. Swipe. Lock in.</title>
+    <script src="theme-init.js"></script>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -31,12 +32,18 @@
     <div class="ambient ambient-two" aria-hidden="true"></div>
 
     <div class="app-shell">
+      <div class="micro-marquee" aria-hidden="true">
+        <span>tiny quests · big plot</span>
+        <span>brain dump, but make it iconic</span>
+        <span>est. right now</span>
+      </div>
+
       <header class="topbar">
         <button class="brand" type="button" data-view-target="swipe" aria-label="Go to swipe deck">
           <span class="brand-mark">SQ</span>
           <span>
             <strong>SwipeQuest</strong>
-            <small>brain dump → side quest</small>
+            <small>your brain’s favourite side quest</small>
           </span>
         </button>
 
@@ -45,6 +52,10 @@
             <span class="local-dot"></span>
             on-device era
           </span>
+          <button class="theme-switch" id="themeToggle" type="button" aria-pressed="false" aria-label="After Dark theme">
+            <span class="theme-switch-icon" aria-hidden="true">☾</span>
+            <span>After dark</span>
+          </button>
           <button class="icon-button" id="openAddTask" type="button" aria-label="Add a side quest">+</button>
         </div>
       </header>
@@ -68,28 +79,28 @@
         <section class="view is-active" id="swipeView" data-view="swipe">
           <div class="section-heading swipe-heading">
             <div>
-              <p class="eyebrow">✦ main character mode: on</p>
-              <h1>Swipe your <span class="gradient-word">next side quest.</span></h1>
-              <p class="hero-subcopy">Brain dump the chaos. Match with one move. Lock in.</p>
+              <p class="eyebrow">currently: choosing peace ✦</p>
+              <h1>Pick your next <span class="gradient-word">little obsession.</span></h1>
+              <p class="hero-subcopy">One thing from the chaos. No life overhaul. No seventeen-tab redemption arc.</p>
             </div>
-            <button class="text-button shuffle-button" id="shuffleDeck" type="button">reshuffle the plot ✦</button>
+            <button class="text-button shuffle-button" id="shuffleDeck" type="button">shuffle the plot ✦</button>
           </div>
 
           <div class="deck-wrap">
-            <span class="floating-sticker sticker-one" aria-hidden="true">low-key productive</span>
-            <span class="floating-sticker sticker-two" aria-hidden="true">one quest. no lore.</span>
+            <span class="floating-sticker sticker-one" aria-hidden="true">do it for the plot</span>
+            <span class="floating-sticker sticker-two" aria-hidden="true">3 tiny wins today ♡</span>
             <div class="deck" id="taskDeck" aria-live="polite"></div>
             <div class="swipe-actions" id="swipeActions">
               <button class="round-action pass-action" id="passTask" type="button">
                 <span>←</span>
-                <small>not the vibe</small>
+                <small>skip the lore</small>
               </button>
               <button class="round-action match-action" id="matchTask" type="button">
                 <span>♥</span>
-                <small>lock in</small>
+                <small>lock in ↗</small>
               </button>
             </div>
-            <p class="keyboard-hint">Drag it · <kbd>←</kbd> not the vibe · <kbd>→</kbd> lock in</p>
+            <p class="keyboard-hint">Drag it · <kbd>←</kbd> skip the lore · <kbd>→</kbd> lock in</p>
           </div>
         </section>
 

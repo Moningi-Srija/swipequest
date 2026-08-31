@@ -1,17 +1,19 @@
 const STORAGE_KEY = "swipequest-state-v1";
 const LEGACY_STORAGE_KEY = "task-crush-state-v1";
+const THEME_STORAGE_KEY = "swipequest-theme-v1";
+const ALLOWED_THEMES = new Set(["cherry-editorial", "after-dark"]);
 const WHATSAPP_MAX_FILE_BYTES = 10 * 1024 * 1024;
 const BACKUP_MAX_FILE_BYTES = 5 * 1024 * 1024;
 const WHATSAPP_RENDER_LIMIT = 250;
 
 const CATEGORY_COLORS = {
-  "👑 Empire Building": "#a675ff",
-  "🛸 Office Grind": "#aab6d6",
-  "💪 Glow Up": "#6ee7b7",
-  "🛵 Freedom & Adulting": "#ffd166",
-  "🎨 Creator Mode": "#f39cff",
-  "🌍 Explore & Social": "#75c8ff",
-  "🕉 Faith & Regulation": "#ff9a76",
+  "👑 Empire Building": "#8d2f62",
+  "🛸 Office Grind": "#536176",
+  "💪 Glow Up": "#3f765b",
+  "🛵 Freedom & Adulting": "#9a6400",
+  "🎨 Creator Mode": "#8f3a7b",
+  "🌍 Explore & Social": "#276b95",
+  "🕉 Faith & Regulation": "#a54e35",
 };
 
 const STARTER_TASKS = [
@@ -71,6 +73,8 @@ const els = {
   whatsappSelectedCount: document.querySelector("#whatsappSelectedCount"),
   importSelectedWhatsApp: document.querySelector("#importSelectedWhatsApp"),
   toast: document.querySelector("#toast"),
+  themeToggle: document.querySelector("#themeToggle"),
+  themeColor: document.querySelector("#themeColor"),
 };
 
 let activeView = "swipe";
@@ -81,6 +85,31 @@ let whatsappCandidates = [];
 let whatsappImportStats = null;
 let whatsappRenderCount = WHATSAPP_RENDER_LIMIT;
 let state = loadState();
+
+function currentTheme() {
+  return document.documentElement?.dataset?.theme === "after-dark" ? "after-dark" : "cherry-editorial";
+}
+
+function applyTheme(theme, persist = true) {
+  const safeTheme = ALLOWED_THEMES.has(theme) ? theme : "cherry-editorial";
+  const isAfterDark = safeTheme === "after-dark";
+  if (document.documentElement?.dataset) document.documentElement.dataset.theme = safeTheme;
+  els.themeToggle?.setAttribute?.("aria-pressed", String(isAfterDark));
+  els.themeToggle?.classList.toggle("is-active", isAfterDark);
+  if (els.themeColor) els.themeColor.content = isAfterDark ? "#141315" : "#f8f1e7";
+  if (!persist) return;
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, safeTheme);
+  } catch (error) {
+    console.warn("Could not save SwipeQuest theme", error);
+  }
+}
+
+function toggleTheme() {
+  const nextTheme = currentTheme() === "after-dark" ? "cherry-editorial" : "after-dark";
+  applyTheme(nextTheme);
+  showToast(nextTheme === "after-dark" ? "After Dark activated ✦" : "Cherry Editorial is back ♡");
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -1210,6 +1239,7 @@ document.querySelectorAll("[data-view-target]").forEach((button) => {
 });
 
 document.querySelector("#openAddTask").addEventListener("click", () => openTaskDialog());
+els.themeToggle.addEventListener("click", toggleTheme);
 document.querySelector("#openAddTaskFromList").addEventListener("click", () => openTaskDialog());
 document.querySelector("#passTask").addEventListener("click", () => animateSwipe("left"));
 document.querySelector("#matchTask").addEventListener("click", () => animateSwipe("right"));
@@ -1254,6 +1284,10 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("storage", (event) => {
+  if (event.key === THEME_STORAGE_KEY) {
+    applyTheme(event.newValue || "cherry-editorial", false);
+    return;
+  }
   if (event.key !== STORAGE_KEY || !event.newValue) return;
   try {
     state = JSON.parse(event.newValue);
@@ -1261,4 +1295,5 @@ window.addEventListener("storage", (event) => {
   } catch (_) {}
 });
 
+applyTheme(currentTheme(), false);
 render();
