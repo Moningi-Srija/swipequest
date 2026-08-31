@@ -1470,18 +1470,21 @@ kbd {
   --panel-solid: #fffaf3;
   --panel-soft: #f4e4e2;
   --line: #ded1c8;
-  --pink: #d5273f;
-  --pink-soft: #c91f3a;
+  --pink: #bd2037;
+  --pink-soft: #b51d33;
   --violet: #7f2947;
-  --gold: #a57432;
+  --gold: #805018;
   --mint: #4d7d63;
-  --acid: #d5273f;
+  --acid: #bd2037;
   --cyan: #536f91;
   --orange: #b95637;
   --danger: #b92338;
   --page-bg: #f8f1e7;
   --surface: #fffaf3;
   --surface-soft: #f2dfdf;
+  --control-line: #81756e;
+  --control-bg: #f1e0de;
+  --placeholder: #665d59;
   --on-accent: #fffaf3;
   --nav-bg: rgba(255, 250, 243, 0.91);
   --backdrop: rgba(38, 25, 24, 0.34);
@@ -1509,6 +1512,9 @@ html[data-theme="after-dark"] {
   --page-bg: #141315;
   --surface: #201e22;
   --surface-soft: #322b42;
+  --control-line: #8f8793;
+  --control-bg: #302b32;
+  --placeholder: #c1bac3;
   --on-accent: #17131e;
   --nav-bg: rgba(28, 26, 30, 0.92);
   --backdrop: rgba(0, 0, 0, 0.7);
@@ -1829,6 +1835,10 @@ h1 {
   color: color-mix(in srgb, var(--card-accent, var(--pink)) 72%, var(--ink));
 }
 
+html[data-theme="after-dark"] .category-chip {
+  color: color-mix(in srgb, var(--card-accent, var(--pink)) 35%, var(--ink));
+}
+
 .energy-chip,
 .source-chip {
   border: 1px solid var(--line);
@@ -2032,8 +2042,8 @@ kbd {
 
 .search-box,
 .status-filters {
-  border-color: var(--line);
-  background: var(--surface);
+  border-color: var(--control-line);
+  background: var(--control-bg);
 }
 
 .search-box {
@@ -2047,7 +2057,7 @@ kbd {
 .search-box input::placeholder,
 .modal input::placeholder,
 .modal textarea::placeholder {
-  color: color-mix(in srgb, var(--muted) 78%, transparent);
+  color: var(--placeholder);
 }
 
 .status-filters {
@@ -2184,8 +2194,8 @@ kbd {
 .modal select,
 .modal textarea,
 .modal .show-all-toggle {
-  border-color: var(--line);
-  background: color-mix(in srgb, var(--surface-soft) 45%, var(--surface));
+  border-color: var(--control-line);
+  background: var(--control-bg);
   color: var(--ink);
 }
 
@@ -2304,6 +2314,48 @@ body,
   .data-tools,
   .file-drop-card {
     border-radius: 24px 8px 24px 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-shell {
+    width: calc(100% - 20px);
+  }
+
+  .topbar {
+    gap: 8px;
+  }
+
+  .brand {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+  }
+
+  .brand strong {
+    font-size: 20px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .topbar-actions {
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .theme-switch,
+  .icon-button {
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    flex: 0 0 44px;
   }
 }
 

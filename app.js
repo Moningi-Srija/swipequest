@@ -1284,7 +1284,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("storage", (event) => {
-  if (event.key === THEME_STORAGE_KEY) {
+  if (event.key === THEME_STORAGE_KEY || event.key === null) {
     applyTheme(event.newValue || "cherry-editorial", false);
     return;
   }
